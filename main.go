@@ -2,13 +2,17 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"todoBackend/app/api/routes"
+	"todoBackend/app/middleware"
+	"todoBackend/utils"
 )
 
 func main() {
+
+	utils.CreateTable()
 	router := gin.Default()
-	router.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "HelloWorld")
-	})
-	router.Run(":8080")
+	router.Use(middleware.ConnectDBMiddleWare())
+	routes.SetupUserRoutes(router)
+	routes.SetupTodoRoutes(router)
+	router.Run()
 }
