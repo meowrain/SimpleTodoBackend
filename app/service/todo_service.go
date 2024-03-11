@@ -12,7 +12,11 @@ func CreateTodo(todo *models.Todo) error {
 	}
 	return nil
 }
-func DeleteTodo(todo *models.Todo) error {
-
+func DeleteTodo(id int) error {
+	db := utils.ConnectDB()
+	result := db.Delete(&models.Todo{}, id)
+	if err := result.Error; err != nil {
+		return err
+	}
 	return nil
 }

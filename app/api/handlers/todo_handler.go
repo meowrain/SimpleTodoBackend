@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"todoBackend/app/models"
 	"todoBackend/app/service"
 	. "todoBackend/utils"
@@ -22,5 +23,8 @@ func CreateTodo(c *gin.Context) {
 }
 
 func DeleteTodo(c *gin.Context) {
-
+	id, _ := strconv.Atoi(c.Param("id"))
+	if err := service.DeleteTodo(id); err != nil {
+		return
+	}
 }

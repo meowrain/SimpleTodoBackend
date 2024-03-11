@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"todoBackend/app/api/routes"
+	"todoBackend/app/config"
 	"todoBackend/app/middleware"
 	"todoBackend/utils"
 )
@@ -14,5 +15,5 @@ func main() {
 	router.Use(middleware.ConnectDBMiddleWare())
 	routes.SetupUserRoutes(router)
 	routes.SetupTodoRoutes(router)
-	router.Run()
+	router.Run(":" + config.Cfg.Server.AppPort)
 }

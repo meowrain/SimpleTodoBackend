@@ -14,7 +14,12 @@ func CreateTable() {
 		fmt.Println("表已经存在")
 		return
 	}
-	// Migrate the schema
-	db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&models.Todo{})
+	err := db.AutoMigrate(&models.User{})
+	if err != nil {
+		return
+	}
+	err = db.AutoMigrate(&models.Todo{})
+	if err != nil {
+		return
+	}
 }

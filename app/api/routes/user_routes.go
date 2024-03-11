@@ -1,16 +1,15 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"todoBackend/app/api/handlers"
+)
 
 func SetupUserRoutes(router *gin.Engine) {
 	userGroup := router.Group("/users")
 	{
-		userGroup.GET("/", func(c *gin.Context) {
-			c.JSON(200, gin.H{
-				"msg": "Test",
-			})
-		})
-
+		userGroup.POST("/register", handlers.Register)
+		userGroup.POST("/login", handlers.Login)
 		//userGroup.GET("/:id")
 	}
 }

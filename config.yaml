@@ -1,8 +1,12 @@
 server:
   port: 8090
+  token_hour_span: 1
 db:
   user: "root"
   password: "123456"
   name: "db1"
   host: "127.0.0.1"
   port: "3306"
+jwt:
+  api_secret: "meowrain"
+  token_hour_span: 1

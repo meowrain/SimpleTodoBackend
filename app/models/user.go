@@ -1,10 +1,12 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type User struct {
 	gorm.Model
-	Username     string
-	PasswordHash string
-	Todos        []Todo
+	Username     string `gorm:"not null" json:"username" binding:"required"`
+	PasswordHash string `gorm:"not null" json:"password" binding:"required"`
+	Todos        []Todo `json:"todos"`
 }

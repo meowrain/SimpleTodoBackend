@@ -17,6 +17,10 @@ type Config struct {
 	Server struct {
 		AppPort string `yaml:"port"`
 	} `yaml:"server"`
+	Jwt struct {
+		ApiSecret     string `yaml:"api_secret"`
+		TokenLifeSpan string `yaml:"token_hour_span"`
+	}
 }
 
 var Cfg *Config
