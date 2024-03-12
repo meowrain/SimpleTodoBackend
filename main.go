@@ -16,4 +16,5 @@ func main() {
 	routes.SetupUserRoutes(router)
 	routes.SetupTodoRoutes(router)
 	router.Run(":" + config.Cfg.Server.AppPort)
+
 }

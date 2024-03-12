@@ -6,6 +6,7 @@ import (
 	"todoBackend/app/models"
 	"todoBackend/app/service"
 	"todoBackend/utils"
+	"todoBackend/utils/token"
 )
 
 func Register(c *gin.Context) {
@@ -14,7 +15,7 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
 		return
 	}
-	err := service.SaveUser(&inputUser)
+	err := service.CreateUser(&inputUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
 		return
@@ -28,10 +29,46 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
 		return
 	}
-	token, err := service.LoginCheck(&inputUser)
+	loginCheck, err := service.LoginCheck(&inputUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "登录失败"))
 		return
 	}
-	c.JSON(http.StatusOK, utils.SuccessResponse(token, "get token success!"))
+	c.JSON(http.StatusOK, utils.SuccessResponse(loginCheck, "get loginCheck success!"))
+}
+func CurrentUser(c *gin.Context) {
+	userId, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	u, err := service.GetUserByID(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, utils.SuccessResponse(u, "success"))
+}
+func UpdateUser(c *gin.Context) {
+	var inputUser models.User
+	if err := c.ShouldBindJSON(&inputUser); err != nil {
+		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
+		return
+	}
+	userId, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	userFromDB, err := service.GetUserByID(userId)
+	if err != nil {
+		c.JSON(http.StatusNotFound, utils.NotFoundResponse(err.Error()))
+		return
+	}
+	if err := service.UpdateUser(&inputUser, &userFromDB); err != nil {
+		c.JSON(http.StatusNotFound, utils.ErrorResponse(err.Error(), "update failed"))
+		return
+	}
+	c.JSON(http.StatusOK, utils.SuccessResponse(userFromDB, "success update"))
+
 }

@@ -5,11 +5,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"html"
 	"strings"
+	"time"
 	"todoBackend/app/models"
 	"todoBackend/utils"
+	"todoBackend/utils/token"
 )
 
-func SaveUser(u *models.User) error {
+func CreateUser(u *models.User) error {
 	var err error
 	err = BeforeSave(u)
 	if err != nil {
@@ -22,6 +24,15 @@ func SaveUser(u *models.User) error {
 	}
 	return nil
 }
+func SaveUser(u *models.User) error {
+	var err error
+	db := utils.ConnectDB()
+	err = db.Save(&u).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
 func BeforeSave(u *models.User) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.PasswordHash), bcrypt.DefaultCost)
 	if err != nil {
@@ -29,6 +40,28 @@ func BeforeSave(u *models.User) error {
 	}
 	u.PasswordHash = string(hashedPassword)
 	u.Username = html.EscapeString(strings.TrimSpace(u.Username))
+	return nil
+}
+func UpdateUser(inputUser, userFromDB *models.User) error {
+	if inputUser.Username != "" {
+		userFromDB.Username = inputUser.Username
+	}
+
+	if inputUser.PasswordHash != "" {
+		// 如果传进来的有值，就进行预处理
+		err := BeforeSave(inputUser)
+		if err != nil {
+			return err
+		}
+		userFromDB.PasswordHash = inputUser.PasswordHash
+	}
+
+	// 更新时间戳
+	userFromDB.UpdatedAt = time.Now()
+	err := SaveUser(userFromDB)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 func VerifyPassword(password, hashedPassword string) error {
@@ -47,10 +80,19 @@ func LoginCheck(u *models.User) (string, error) {
 	if err != nil && errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
 		return "", err
 	}
-	token, err := utils.GenerateToken(u.ID)
+	generateToken, err := token.GenerateToken(userInDB.ID)
 	if err != nil {
 		return "", err
 	}
-	return token, nil
+	return generateToken, nil
 
+}
+func GetUserByID(id uint) (models.User, error) {
+	var u models.User
+	db := utils.ConnectDB()
+	if err := db.First(&u, id).Error; err != nil {
+		return u, errors.New("user not found")
+	}
+	u.PasswordHash = ""
+	return u, nil
 }
