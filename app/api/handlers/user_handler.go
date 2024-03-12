@@ -9,6 +9,7 @@ import (
 	"todoBackend/utils/token"
 )
 
+// Register 用于处理用户注册请求。
 func Register(c *gin.Context) {
 	var inputUser models.User
 	if err := c.ShouldBindJSON(&inputUser); err != nil {
@@ -23,6 +24,7 @@ func Register(c *gin.Context) {
 	c.JSON(http.StatusOK, utils.SuccessResponse(inputUser, "success"))
 }
 
+// Login 用于处理用户登录的请求
 func Login(c *gin.Context) {
 	var inputUser models.User
 	if err := c.ShouldBindJSON(&inputUser); err != nil {
@@ -36,6 +38,8 @@ func Login(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, utils.SuccessResponse(loginCheck, "get loginCheck success!"))
 }
+
+// CurrentUser 用来获取当前用户的信息并返回给前端
 func CurrentUser(c *gin.Context) {
 	userId, err := token.ExtractTokenID(c)
 	if err != nil {
@@ -49,6 +53,8 @@ func CurrentUser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, utils.SuccessResponse(u, "success"))
 }
+
+// UpdateUser 用来更新用户信息
 func UpdateUser(c *gin.Context) {
 	var inputUser models.User
 	if err := c.ShouldBindJSON(&inputUser); err != nil {

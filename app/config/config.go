@@ -25,6 +25,7 @@ type Config struct {
 
 var Cfg *Config
 
+// 用来获取yaml配置文件信息并且放在Cfg变量中，在程序加载config包的时候进行初始化
 func init() {
 	var err error
 	Cfg, err = ReadConfigFile("config.yaml")
@@ -32,6 +33,8 @@ func init() {
 		log.Fatalf("Failed to read config file: %v", err)
 	}
 }
+
+// ReadConfigFile 用来读取yaml配置文件中的信息
 func ReadConfigFile(filepath string) (*Config, error) {
 	data, err := os.ReadFile(filepath)
 	if err != nil {

@@ -87,6 +87,8 @@ func LoginCheck(u *models.User) (string, error) {
 	return generateToken, nil
 
 }
+
+// GetUserByID
 func GetUserByID(id uint) (models.User, error) {
 	var u models.User
 	db := utils.ConnectDB()

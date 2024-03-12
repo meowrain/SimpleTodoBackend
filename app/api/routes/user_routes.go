@@ -6,6 +6,7 @@ import (
 	"todoBackend/app/middleware"
 )
 
+// SetupUserRoutes 函数负责配置与用户相关的路由。
 func SetupUserRoutes(router *gin.Engine) {
 	userGroup := router.Group("/users")
 	{
