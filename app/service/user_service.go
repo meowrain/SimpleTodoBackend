@@ -2,13 +2,14 @@ package service
 
 import (
 	"errors"
-	"golang.org/x/crypto/bcrypt"
 	"html"
 	"strings"
 	"time"
 	"todoBackend/app/models"
 	"todoBackend/utils"
 	"todoBackend/utils/token"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func CreateUser(u *models.User) error {
@@ -24,6 +25,8 @@ func CreateUser(u *models.User) error {
 	}
 	return nil
 }
+
+// SaveUser
 func SaveUser(u *models.User) error {
 	var err error
 	db := utils.ConnectDB()
@@ -43,6 +46,8 @@ func BeforeSave(u *models.User) error {
 	return nil
 }
 func UpdateUser(inputUser, userFromDB *models.User) error {
+	//这个可以直接SaveUser(u) 但是这样的话，会把所有的字段都更新，不太好
+
 	if inputUser.Username != "" {
 		userFromDB.Username = inputUser.Username
 	}
@@ -97,4 +102,14 @@ func GetUserByID(id uint) (models.User, error) {
 	}
 	u.PasswordHash = ""
 	return u, nil
+}
+
+func UpdateAvatar(u *models.User, avatarURL string) error {
+	u.Avatar = avatarURL
+	//更新用户信息
+	err := SaveUser(u)
+	if err != nil {
+		return err
+	}
+	return nil
 }

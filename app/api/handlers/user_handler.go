@@ -1,12 +1,16 @@
 package handlers
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"net/http"
+	"path/filepath"
+	"strconv"
 	"todoBackend/app/models"
 	"todoBackend/app/service"
 	"todoBackend/utils"
 	"todoBackend/utils/token"
+
+	"github.com/gin-gonic/gin"
 )
 
 // Register 用于处理用户注册请求。
@@ -77,4 +81,48 @@ func UpdateUser(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, utils.SuccessResponse(userFromDB, "success update"))
 
+}
+
+// UploadAvatar 用于处理上传头像的请求
+func UploadAvatar(c *gin.Context) {
+	// 获取用户id
+	userId, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 获取上传的文件
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
+		return
+	}
+
+	// 获取文件名
+	fileName := file.Filename
+	// 获取文件后缀
+	extName := filepath.Ext(fileName)
+	fmt.Println(fileName, extName)
+	// 通过id获取用户信息
+	userFromDB, err := service.GetUserByID(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
+		return
+	}
+	// 将文件保存到指定路径
+	err = c.SaveUploadedFile(file, "app/static/avatars/"+strconv.Itoa(int(userId))+extName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.ErrorResponse(err.Error(), "保存文件失败"))
+		return
+	}
+	// 更新用户头像
+
+	err = service.UpdateAvatar(&userFromDB, "http://127.0.0.1:8090/users/avatars/"+strconv.Itoa(int(userId))+extName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utils.ErrorResponse(err.Error(), "更新用户头像失败"))
+		return
+	}
+	// 返回成功信息
+	c.JSON(http.StatusOK, utils.SuccessResponse(userFromDB, "avatar uploaded successfully"))
 }
