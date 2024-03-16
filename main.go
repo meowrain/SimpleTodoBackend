@@ -14,7 +14,7 @@ func main() {
 	router := gin.Default()
 	router.Use(middleware.ConnectDBMiddleWare())
 
-	// Setup routes
+	// 设置路由
 	routes.SetupUserRoutes(router)
 	routes.SetupTodoRoutes(router)
 

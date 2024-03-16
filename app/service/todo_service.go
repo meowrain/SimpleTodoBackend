@@ -12,6 +12,15 @@ func CreateTodo(todo *models.Todo) error {
 	}
 	return nil
 }
+func GetAllTodo() ([]models.Todo, error) {
+	db := utils.ConnectDB()
+	var todos []models.Todo
+	if err := db.Find(&todos).Error; err != nil {
+		return nil, err
+	} else {
+		return todos, nil
+	}
+}
 func DeleteTodo(id int) error {
 	db := utils.ConnectDB()
 	result := db.Delete(&models.Todo{}, id)

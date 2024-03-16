@@ -7,4 +7,5 @@ type Todo struct {
 	Content string `json:"content"`
 	Status  int    `json:"status"`
 	UserID  uint   `json:"userID"`
+	Tag     string `json:"tag"`
 }
