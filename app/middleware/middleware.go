@@ -3,22 +3,8 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"todoBackend/utils"
 	"todoBackend/utils/token"
 )
-
-// ConnectDBMiddleWare ConnectDBMiddleWare是一个中间件函数，用于连接数据库
-// 这是通过调用utils包中的ConnectDB()函数实现的。
-// 它返回一个gin.HandlerFunc类型的函数，
-// 在这个函数中，我们通过调用c.Set()函数将数据库连接存储在gin的上下文中。
-// 这样，后续的处理器就能够通过从上下文中获取到数据库连接。
-func ConnectDBMiddleWare() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		db := utils.ConnectDB()
-		c.Set("db", db)
-		c.Next()
-	}
-}
 
 // JwtAuthMiddleware JwtAuthMiddleware是一个JWT认证中间件
 // 它调用了token包中的Valid()函数以校验请求中的JWT token。
