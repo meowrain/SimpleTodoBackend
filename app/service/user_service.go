@@ -19,6 +19,7 @@ func CreateUser(u *models.User) error {
 		return err
 	}
 	db := utils.ConnectDB()
+
 	err = db.Create(&u).Error
 	if err != nil {
 		return err

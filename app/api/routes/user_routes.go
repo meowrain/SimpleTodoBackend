@@ -16,7 +16,7 @@ func SetupUserRoutes(router *gin.Engine) {
 		userGroup.POST("/register", handlers.Register)
 		userGroup.POST("/login", handlers.Login)
 		userGroup.Use(middleware.JwtAuthMiddleware())
-		userGroup.GET("/", handlers.CurrentUser)
+		userGroup.GET("/info", handlers.CurrentUser)
 		userGroup.PUT("/update", handlers.UpdateUser)
 		//临时测试
 		userGroup.GET("/default_avatar", func(c *gin.Context) {

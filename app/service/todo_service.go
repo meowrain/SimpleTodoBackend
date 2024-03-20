@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"todoBackend/app/models"
 	"todoBackend/utils"
 )
@@ -24,12 +25,33 @@ func GetAllTodo() ([]models.Todo, error) {
 } //删除todo根据提供的ID
 func DeleteTodo(id int) error {
 	db := utils.ConnectDB()
-	result := db.Delete(&models.Todo{}, id)
+
+	// 首先，尝试获取todo
+	todo := models.Todo{}
+	err := db.First(&todo, id).Error
+	if err != nil {
+		// 如果我们无法找到这个todo，报错
+		return errors.New("Todo未找到")
+	}
+
+	// 然后检查todo是否已经被删除
+	if todo.DeletedAt.Valid {
+		// 如果我们找到的todo已经被删除，报错
+		return errors.New("这个todo已经被删除过了")
+	}
+
+	// 如果todo存在并且未被删除，我们就删除它
+	result := db.Delete(&todo)
 	if err := result.Error; err != nil {
+		// 如果在试图删除todo时有错误发生，返回这个错误
 		return err
 	}
+
+	// 如果一切正常，返回nil表示没有错误
 	return nil
-} //更新数据//
+}
+
+// 更新数据//
 func UpdateTodo(id int, updateTodo *models.Todo) error {
 	db := utils.ConnectDB()
 	if err := db.Save(&updateTodo).Error; err != nil {

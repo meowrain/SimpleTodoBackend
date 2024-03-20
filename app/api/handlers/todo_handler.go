@@ -25,7 +25,7 @@ func CreateTodo(c *gin.Context) {
 func GetAllTodo(c *gin.Context) {
 	todos, err := service.GetAllTodo()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse(err, "error"))
+		c.JSON(http.StatusBadRequest, ErrorResponse(err, "获取全部todo失败"))
 	}
 	c.JSON(http.StatusOK, SuccessResponse(todos, "get successfully!"))
 }
@@ -33,8 +33,10 @@ func GetAllTodo(c *gin.Context) {
 func DeleteTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	if err := service.DeleteTodo(id); err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse(err, "删除todo失败"))
 		return
 	}
+	c.JSON(http.StatusOK, SuccessResponse(id, "todo 删除成功"))
 }
 
 // TODO: 修复更新函数

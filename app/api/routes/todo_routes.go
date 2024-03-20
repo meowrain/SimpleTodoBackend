@@ -13,7 +13,7 @@ func SetupTodoRoutes(router *gin.Engine) {
 		todoGroup.POST("/add", handlers.CreateTodo)
 
 		//删除todo
-		todoGroup.POST("/delete/:id", handlers.DeleteTodo)
+		todoGroup.DELETE("/delete/:id", handlers.DeleteTodo)
 
 		//修改todo
 		todoGroup.PUT("/update/:id", handlers.UpdateTodo)
