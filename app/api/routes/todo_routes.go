@@ -13,19 +13,19 @@ func SetupTodoRoutes(router *gin.Engine) {
 		todoGroup.POST("/add", handlers.CreateTodo)
 
 		//删除todo
-		todoGroup.POST("/delete")
+		todoGroup.POST("/delete/:id", handlers.DeleteTodo)
 
 		//修改todo
-		todoGroup.PUT("/update")
+		todoGroup.PUT("/update/:id", handlers.UpdateTodo)
 
 		//获取所有todo
 		todoGroup.GET("/all", handlers.GetAllTodo)
 
 		//获取指定id的todo
-		todoGroup.GET("/:id")
+		todoGroup.GET("/:id", handlers.GetTodo)
 
 		//获取todo的条数
-		todoGroup.GET("/num")
+		todoGroup.GET("/num", handlers.GetNumofTodo)
 
 		//todo图片/语音上传
 		todoGroup.POST("/upload")
