@@ -3,12 +3,14 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"todoBackend/app/api/handlers/todoHandler"
+	"todoBackend/app/middleware"
 )
 
 // SetupTodoRoutes 用于配置todo相关的路由
 func SetupTodoRoutes(router *gin.Engine) {
 	todoGroup := router.Group("/todos")
 	{
+		todoGroup.Use(middleware.JwtAuthMiddleware())
 		// 添加todo
 		todoGroup.POST("/add", todoHandler.CreateTodo)
 
