@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"todoBackend/app/api/handlers"
+	"todoBackend/app/api/handlers/userHandler"
 	"todoBackend/app/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -13,11 +13,11 @@ func SetupUserRoutes(router *gin.Engine) {
 	{
 		//为user设置静态目录，存放用户头像信息
 		userGroup.Static("/avatars", "./app/static/avatars")
-		userGroup.POST("/register", handlers.Register)
-		userGroup.POST("/login", handlers.Login)
+		userGroup.POST("/register", userHandler.Register)
+		userGroup.POST("/login", userHandler.Login)
 		userGroup.Use(middleware.JwtAuthMiddleware())
-		userGroup.GET("/info", handlers.CurrentUser)
-		userGroup.PUT("/update", handlers.UpdateUser)
+		userGroup.GET("/info", userHandler.CurrentUser)
+		userGroup.PUT("/update", userHandler.UpdateUser)
 		//临时测试
 		userGroup.GET("/default_avatar", func(c *gin.Context) {
 			c.JSON(200, gin.H{
@@ -25,6 +25,6 @@ func SetupUserRoutes(router *gin.Engine) {
 			})
 		})
 		//上传头像
-		userGroup.POST("/upload_avatar", handlers.UploadAvatar)
+		userGroup.POST("/upload_avatar", userHandler.UploadAvatar)
 	}
 }

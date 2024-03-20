@@ -1,4 +1,4 @@
-package handlers
+package userHandler
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"todoBackend/app/models"
-	"todoBackend/app/service"
+	"todoBackend/app/service/userService"
 	"todoBackend/utils"
 	"todoBackend/utils/token"
 
@@ -20,7 +20,7 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
 		return
 	}
-	err := service.CreateUser(&inputUser)
+	err := userService.CreateUser(&inputUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
 		return
@@ -35,7 +35,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
 		return
 	}
-	loginCheck, err := service.LoginCheck(&inputUser)
+	loginCheck, err := userService.LoginCheck(&inputUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "登录失败"))
 		return
@@ -50,7 +50,7 @@ func CurrentUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	u, err := service.GetUserByID(userId)
+	u, err := userService.GetUserByID(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -70,12 +70,12 @@ func UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	userFromDB, err := service.GetUserByID(userId)
+	userFromDB, err := userService.GetUserByID(userId)
 	if err != nil {
 		c.JSON(http.StatusNotFound, utils.NotFoundResponse(err.Error()))
 		return
 	}
-	if err := service.UpdateUser(&inputUser, &userFromDB); err != nil {
+	if err := userService.UpdateUser(&inputUser, &userFromDB); err != nil {
 		c.JSON(http.StatusNotFound, utils.ErrorResponse(err.Error(), "update failed"))
 		return
 	}
@@ -105,7 +105,7 @@ func UploadAvatar(c *gin.Context) {
 	extName := filepath.Ext(fileName)
 	fmt.Println(fileName, extName)
 	// 通过id获取用户信息
-	userFromDB, err := service.GetUserByID(userId)
+	userFromDB, err := userService.GetUserByID(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
 		return
@@ -118,7 +118,7 @@ func UploadAvatar(c *gin.Context) {
 	}
 	// 更新用户头像
 
-	err = service.UpdateAvatar(&userFromDB, "http://127.0.0.1:8090/users/avatars/"+strconv.Itoa(int(userId))+extName)
+	err = userService.UpdateAvatar(&userFromDB, "http://127.0.0.1:8090/users/avatars/"+strconv.Itoa(int(userId))+extName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.ErrorResponse(err.Error(), "更新用户头像失败"))
 		return

@@ -1,11 +1,10 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	"todoBackend/app/api/routes"
 	"todoBackend/app/config"
 	"todoBackend/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {

@@ -1,10 +1,10 @@
-package handlers
+package todoHandler
 
 import (
 	"net/http"
 	"strconv"
 	"todoBackend/app/models"
-	"todoBackend/app/service"
+	"todoBackend/app/service/todoService"
 	. "todoBackend/utils"
 
 	"github.com/gin-gonic/gin"
@@ -16,14 +16,14 @@ func CreateTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, ErrorResponse(err, "error"))
 		return
 	}
-	if err := service.CreateTodo(&todo); err != nil {
+	if err := todoService.CreateTodo(&todo); err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse(err, "error"))
 		return
 	}
 	c.JSON(http.StatusOK, SuccessResponse(todo, "Add success!"))
 }
 func GetAllTodo(c *gin.Context) {
-	todos, err := service.GetAllTodo()
+	todos, err := todoService.GetAllTodo()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse(err, "获取全部todo失败"))
 	}
@@ -32,7 +32,7 @@ func GetAllTodo(c *gin.Context) {
 
 func DeleteTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	if err := service.DeleteTodo(id); err != nil {
+	if err := todoService.DeleteTodo(id); err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse(err, "删除todo失败"))
 		return
 	}
@@ -46,7 +46,7 @@ func UpdateTodo(c *gin.Context) {
 		return
 	}
 	id, _ := strconv.Atoi(c.Param("id"))
-	if err := service.UpdateTodo(id, &todo); err != nil {
+	if err := todoService.UpdateTodo(id, &todo); err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse(err, "error"))
 		return
 	}
@@ -54,7 +54,7 @@ func UpdateTodo(c *gin.Context) {
 }
 func GetTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	todo, err := service.GetTodo(id)
+	todo, err := todoService.GetTodo(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, ErrorResponse(err, "error"))
 		return
@@ -62,11 +62,14 @@ func GetTodo(c *gin.Context) {
 	c.JSON(200, SuccessResponse(todo, "GET success!"))
 }
 func GetNumofTodo(c *gin.Context) {
-	count, err := service.GetNumsofTodo()
+	count, err := todoService.GetNumsofTodo()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse(0, "error"))
 		return
 	}
 	c.JSON(200, SuccessResponse(count, "Count obtained successfully "))
 
+}
+func UploadTodoPhoto(c *gin.Context) {
+	c.JSON(200, SuccessResponse(nil, "Upload successfully"))
 }
