@@ -39,7 +39,6 @@ func DeleteTodo(c *gin.Context) {
 	c.JSON(http.StatusOK, SuccessResponse(id, "todo 删除成功"))
 }
 
-// TODO: 修复更新函数
 func UpdateTodo(c *gin.Context) {
 	var todo models.Todo
 	if err := c.ShouldBindJSON(&todo); err != nil {
@@ -57,7 +56,7 @@ func GetTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	todo, err := service.GetTodo(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse(err, "erroe"))
+		c.JSON(http.StatusNotFound, ErrorResponse(err, "error"))
 		return
 	}
 	c.JSON(200, SuccessResponse(todo, "GET success!"))
@@ -65,7 +64,7 @@ func GetTodo(c *gin.Context) {
 func GetNumofTodo(c *gin.Context) {
 	count, err := service.GetNumsofTodo()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse(0, "erroe"))
+		c.JSON(http.StatusBadRequest, ErrorResponse(0, "error"))
 		return
 	}
 	c.JSON(200, SuccessResponse(count, "Count obtained successfully "))

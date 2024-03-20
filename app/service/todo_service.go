@@ -54,9 +54,16 @@ func DeleteTodo(id int) error {
 // 更新数据//
 func UpdateTodo(id int, updateTodo *models.Todo) error {
 	db := utils.ConnectDB()
-	if err := db.Save(&updateTodo).Error; err != nil {
-		return nil
+	//查询是否存在这个todo
+	var todo models.Todo
+	if err := db.First(&todo, id).Error; err != nil {
+		return err
 	}
+	if err := db.Model(&todo).Updates(*updateTodo).Error; err != nil {
+		return err
+	}
+	// 如果一个均无错误，则将更新的todo赋值给传入的结构，这样调用者可以获取到最新信息
+	*updateTodo = todo
 	return nil
 }
 func GetTodo(id int) (*models.Todo, error) {
@@ -68,9 +75,9 @@ func GetTodo(id int) (*models.Todo, error) {
 	return &todo, nil
 }
 func GetNumsofTodo() (int, error) {
-	dp := utils.ConnectDB()
+	db := utils.ConnectDB()
 	var count int64
-	if err := dp.Model(&models.Todo{}).Count(&count).Error; err != nil {
+	if err := db.Model(&models.Todo{}).Count(&count).Error; err != nil {
 		return 0, err
 	}
 	return int(count), nil
