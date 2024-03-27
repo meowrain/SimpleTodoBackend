@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"todoBackend/app/config"
 	"todoBackend/app/models"
 	"todoBackend/app/service/userService"
 	"todoBackend/utils"
@@ -85,6 +86,9 @@ func UpdateUser(c *gin.Context) {
 
 // UploadAvatar 用于处理上传头像的请求
 func UploadAvatar(c *gin.Context) {
+	c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+	c.Header("Pragma", "no-cache")
+	c.Header("Expires", "0")
 	// 获取用户id
 	userId, err := token.ExtractTokenID(c)
 	if err != nil {
@@ -103,7 +107,6 @@ func UploadAvatar(c *gin.Context) {
 	fileName := file.Filename
 	// 获取文件后缀
 	extName := filepath.Ext(fileName)
-	fmt.Println(fileName, extName)
 	// 通过id获取用户信息
 	userFromDB, err := userService.GetUserByID(userId)
 	if err != nil {
@@ -117,8 +120,9 @@ func UploadAvatar(c *gin.Context) {
 		return
 	}
 	// 更新用户头像
-
-	err = userService.UpdateAvatar(&userFromDB, "http://127.0.0.1:8090/users/avatars/"+strconv.Itoa(int(userId))+extName)
+	server := config.Cfg.Server.URL
+	uploadUrl := fmt.Sprintf("%s/users/avatars/", server) + strconv.Itoa(int(userId)) + extName
+	err = userService.UpdateAvatar(&userFromDB, uploadUrl)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.ErrorResponse(err.Error(), "更新用户头像失败"))
 		return

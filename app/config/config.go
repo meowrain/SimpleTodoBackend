@@ -15,6 +15,7 @@ type Config struct {
 		Port     string `yaml:"port"`
 	} `yaml:"db"`
 	Server struct {
+		URL     string `yaml:"url"`
 		AppPort string `yaml:"port"`
 	} `yaml:"server"`
 	Jwt struct {
