@@ -1,13 +1,13 @@
 package todoHandler
 
 import (
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"todoBackend/app/models"
 	"todoBackend/app/service/todoService"
 	. "todoBackend/utils"
-
-	"github.com/gin-gonic/gin"
+	"todoBackend/utils/token"
 )
 
 func CreateTodo(c *gin.Context) {
@@ -23,7 +23,8 @@ func CreateTodo(c *gin.Context) {
 	c.JSON(http.StatusOK, SuccessResponse(todo, "Add success!"))
 }
 func GetAllTodo(c *gin.Context) {
-	todos, err := todoService.GetAllTodo()
+	userId, err := token.ExtractTokenID(c)
+	todos, err := todoService.GetAllTodo(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse(err, "获取全部todo失败"))
 	}
@@ -62,7 +63,8 @@ func GetTodo(c *gin.Context) {
 	c.JSON(200, SuccessResponse(todo, "GET success!"))
 }
 func GetNumofTodo(c *gin.Context) {
-	count, err := todoService.GetNumsofTodo()
+	userId, err := token.ExtractTokenID(c)
+	count, err := todoService.GetNumsofTodo(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse(0, "error"))
 		return
