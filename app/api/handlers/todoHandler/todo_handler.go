@@ -1,8 +1,10 @@
 package todoHandler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"todoBackend/app/models"
 	"todoBackend/app/service/todoService"
@@ -73,5 +75,19 @@ func GetNumofTodo(c *gin.Context) {
 
 }
 func UploadTodoPhoto(c *gin.Context) {
-	c.JSON(200, SuccessResponse(nil, "Upload successfully"))
+	todoid, _ := strconv.Atoi(c.Param("id"))
+	file, err := c.FormFile("photo")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse(err.Error(), "error"))
+		return
+	}
+	//获取文件名的后缀
+	extname := filepath.Ext(file.Filename)
+	//将文件保存到指定的路径
+	err = c.SaveUploadedFile(file, fmt.Sprintf("app/static/photots/%d%s", todoid, extname))
+	if err != nil {
+		c.JSON(500, "文件保存失败")
+		return
+	}
+	c.JSON(200, SuccessResponse("上传成功", "Upload successfully"))
 }
