@@ -30,7 +30,7 @@ func SetupTodoRoutes(router *gin.Engine) {
 		todoGroup.GET("/num", todoHandler.GetNumofTodo)
 
 		//todo图片/语音上传
-		todoGroup.POST("/upload", todoHandler.UploadTodoPhoto)
+		todoGroup.POST("/upload/:id", todoHandler.UploadTodoPhoto)
 
 		//
 	}
