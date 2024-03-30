@@ -15,11 +15,14 @@ import (
 func CreateUser(u *models.User) error {
 	var err error
 	err = BeforeSave(u)
+	//限制bio长度
 	if err != nil {
 		return err
 	}
+	if len(u.Bio) > 250 {
+		return errors.New("Bio is too long, maximum is 240 characters")
+	}
 	db := utils.ConnectDB()
-
 	err = db.Create(&u).Error
 	if err != nil {
 		return err
@@ -108,6 +111,29 @@ func GetUserByID(id uint) (models.User, error) {
 func UpdateAvatar(u *models.User, avatarURL string) error {
 	u.Avatar = avatarURL
 	//更新用户信息
+	err := SaveUser(u)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 更新bio
+func Updatebio(u *models.User, bio string) error {
+	if len(bio) > 250 {
+		return errors.New("Bio is too long")
+	}
+	u.Bio = bio
+	err := SaveUser(u)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 删除bio
+func Dlebio(u *models.User) error {
+	u.Bio = ""
 	err := SaveUser(u)
 	if err != nil {
 		return err

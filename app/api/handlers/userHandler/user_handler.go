@@ -130,3 +130,48 @@ func UploadAvatar(c *gin.Context) {
 	// 返回成功信息
 	c.JSON(http.StatusOK, utils.SuccessResponse(userFromDB, "avatar uploaded successfully"))
 }
+func UpdateBio(c *gin.Context) {
+	var updateUser models.User
+	if err := c.BindJSON(&updateUser); err != nil {
+		c.JSON(400, utils.ErrorResponse(err.Error(), "error"))
+		return
+	}
+	//获取这个用户的ID
+	userid, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	//获取信息
+	userFromDB, err := userService.GetUserByID(userid)
+	if err != nil {
+		c.JSON(400, utils.ErrorResponse(err.Error(), "error"))
+		return
+	}
+	if len(updateUser.Bio) > 250 {
+		c.JSON(400, gin.H{"error": "Bio is too long"})
+		return
+	}
+	if err := userService.Updatebio(&updateUser, userFromDB.Bio); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+	} else {
+		c.JSON(200, gin.H{"message": "Bio updated successfully"})
+	}
+}
+func DleBio(c *gin.Context) {
+	userId, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	userFromDB, err := userService.GetUserByID(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err = userService.Dlebio(&userFromDB); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"user": userFromDB})
+}
