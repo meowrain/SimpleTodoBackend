@@ -130,3 +130,53 @@ func UploadAvatar(c *gin.Context) {
 	// 返回成功信息
 	c.JSON(http.StatusOK, utils.SuccessResponse(userFromDB, "avatar uploaded successfully"))
 }
+func UpdateBio(c *gin.Context) {
+
+	// 从请求解析用户提交的bio信息
+	var updateUser struct {
+		Bio string `json:"bio"`
+	}
+	if err := c.ShouldBindJSON(&updateUser); err != nil {
+		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
+		return
+	}
+	// 从声明的JWT中解析出登录的用户ID
+	userId, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	// 从数据库中获取该用户的详细信息
+	userFromDB, err := userService.GetUserByID(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 调用userService的Updatebio方法来更新数据库中用户的bio信息
+	if err := userService.Updatebio(&userFromDB, updateUser.Bio); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 返回经过更新的用户具体信息到客户端为响应
+	c.JSON(http.StatusOK, gin.H{"user": userFromDB})
+}
+
+func DleBio(c *gin.Context) {
+	userId, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	userFromDB, err := userService.GetUserByID(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err = userService.Dlebio(&userFromDB); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"user": userFromDB})
+}
