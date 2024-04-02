@@ -64,7 +64,12 @@ func UpdateUser(inputUser, userFromDB *models.User) error {
 		}
 		userFromDB.PasswordHash = inputUser.PasswordHash
 	}
-
+	userFromDB.Bio = inputUser.Bio
+	userFromDB.Birthday = inputUser.Birthday
+	userFromDB.Email = inputUser.Email
+	userFromDB.Gender = inputUser.Gender
+	userFromDB.Birthday = inputUser.Birthday
+	userFromDB.PhoneNumber = inputUser.PhoneNumber
 	// 更新时间戳
 	userFromDB.UpdatedAt = time.Now()
 	err := SaveUser(userFromDB)
