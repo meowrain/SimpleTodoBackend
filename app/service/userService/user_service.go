@@ -51,7 +51,6 @@ func BeforeSave(u *models.User) error {
 }
 func UpdateUser(inputUser, userFromDB *models.User) error {
 	//这个可以直接SaveUser(u) 但是这样的话，会把所有的字段都更新，不太好
-
 	if inputUser.Username != "" {
 		userFromDB.Username = inputUser.Username
 	}
@@ -64,12 +63,24 @@ func UpdateUser(inputUser, userFromDB *models.User) error {
 		}
 		userFromDB.PasswordHash = inputUser.PasswordHash
 	}
-	userFromDB.Bio = inputUser.Bio
-	userFromDB.Birthday = inputUser.Birthday
-	userFromDB.Email = inputUser.Email
-	userFromDB.Gender = inputUser.Gender
-	userFromDB.Birthday = inputUser.Birthday
-	userFromDB.PhoneNumber = inputUser.PhoneNumber
+	if inputUser.Bio != "" {
+		userFromDB.Bio = inputUser.Bio
+	}
+
+	if inputUser.Birthday != "" {
+		userFromDB.Birthday = inputUser.Birthday
+	}
+
+	if inputUser.Email != "" {
+		userFromDB.Email = inputUser.Email
+	}
+	if inputUser.Gender != "" {
+		userFromDB.Gender = inputUser.Gender
+	}
+
+	if inputUser.PhoneNumber != "" {
+		userFromDB.PhoneNumber = inputUser.PhoneNumber
+	}
 	// 更新时间戳
 	userFromDB.UpdatedAt = time.Now()
 	err := SaveUser(userFromDB)
