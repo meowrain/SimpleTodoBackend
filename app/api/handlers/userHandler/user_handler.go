@@ -8,7 +8,7 @@ import (
 	"todoBackend/app/config"
 	"todoBackend/app/models"
 	"todoBackend/app/service/userService"
-	"todoBackend/utils"
+	"todoBackend/utils/responses"
 	"todoBackend/utils/token"
 
 	"github.com/gin-gonic/gin"
@@ -18,30 +18,30 @@ import (
 func Register(c *gin.Context) {
 	var inputUser models.User
 	if err := c.ShouldBindJSON(&inputUser); err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
 	}
 	err := userService.CreateUser(&inputUser)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
 	}
-	c.JSON(http.StatusOK, utils.SuccessResponse(inputUser, "success"))
+	c.JSON(http.StatusOK, responses.SuccessResponse(inputUser, "success"))
 }
 
 // Login 用于处理用户登录的请求
 func Login(c *gin.Context) {
 	var inputUser models.User
 	if err := c.ShouldBindJSON(&inputUser); err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
 	}
 	loginCheck, err := userService.LoginCheck(&inputUser)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "登录失败"))
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "登录失败"))
 		return
 	}
-	c.JSON(http.StatusOK, utils.SuccessResponse(loginCheck, "get loginCheck success!"))
+	c.JSON(http.StatusOK, responses.SuccessResponse(loginCheck, "get loginCheck success!"))
 }
 
 // CurrentUser 用来获取当前用户的信息并返回给前端
@@ -56,14 +56,14 @@ func CurrentUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, utils.SuccessResponse(u, "success"))
+	c.JSON(http.StatusOK, responses.SuccessResponse(u, "success"))
 }
 
 // UpdateUser 用来更新用户信息
 func UpdateUser(c *gin.Context) {
 	var inputUser models.User
 	if err := c.ShouldBindJSON(&inputUser); err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
 	}
 	userId, err := token.ExtractTokenID(c)
@@ -73,14 +73,14 @@ func UpdateUser(c *gin.Context) {
 	}
 	userFromDB, err := userService.GetUserByID(userId)
 	if err != nil {
-		c.JSON(http.StatusNotFound, utils.NotFoundResponse(err.Error()))
+		c.JSON(http.StatusNotFound, responses.NotFoundResponse(err.Error()))
 		return
 	}
 	if err := userService.UpdateUser(&inputUser, &userFromDB); err != nil {
-		c.JSON(http.StatusNotFound, utils.ErrorResponse(err.Error(), "update failed"))
+		c.JSON(http.StatusNotFound, responses.ErrorResponse(err.Error(), "update failed"))
 		return
 	}
-	c.JSON(http.StatusOK, utils.SuccessResponse(userFromDB, "success update"))
+	c.JSON(http.StatusOK, responses.SuccessResponse(userFromDB, "success update"))
 
 }
 
@@ -99,7 +99,7 @@ func UploadAvatar(c *gin.Context) {
 	// 获取上传的文件
 	file, err := c.FormFile("avatar")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
 	}
 
@@ -110,13 +110,13 @@ func UploadAvatar(c *gin.Context) {
 	// 通过id获取用户信息
 	userFromDB, err := userService.GetUserByID(userId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
 	}
 	// 将文件保存到指定路径
 	err = c.SaveUploadedFile(file, "app/static/avatars/"+strconv.Itoa(int(userId))+extName)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utils.ErrorResponse(err.Error(), "保存文件失败"))
+		c.JSON(http.StatusInternalServerError, responses.ErrorResponse(err.Error(), "保存文件失败"))
 		return
 	}
 	// 更新用户头像
@@ -124,11 +124,11 @@ func UploadAvatar(c *gin.Context) {
 	uploadUrl := fmt.Sprintf("%s/users/avatars/", server) + strconv.Itoa(int(userId)) + extName
 	err = userService.UpdateAvatar(&userFromDB, uploadUrl)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utils.ErrorResponse(err.Error(), "更新用户头像失败"))
+		c.JSON(http.StatusInternalServerError, responses.ErrorResponse(err.Error(), "更新用户头像失败"))
 		return
 	}
 	// 返回成功信息
-	c.JSON(http.StatusOK, utils.SuccessResponse(userFromDB, "avatar uploaded successfully"))
+	c.JSON(http.StatusOK, responses.SuccessResponse(userFromDB, "avatar uploaded successfully"))
 }
 func UpdateBio(c *gin.Context) {
 
@@ -137,7 +137,7 @@ func UpdateBio(c *gin.Context) {
 		Bio string `json:"bio"`
 	}
 	if err := c.ShouldBindJSON(&updateUser); err != nil {
-		c.JSON(http.StatusBadRequest, utils.ErrorResponse(err.Error(), "error"))
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
 	}
 	// 从声明的JWT中解析出登录的用户ID

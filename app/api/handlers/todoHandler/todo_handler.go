@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"todoBackend/app/models"
 	"todoBackend/app/service/todoService"
-	. "todoBackend/utils"
+	. "todoBackend/utils/responses"
 	"todoBackend/utils/token"
 )
 
