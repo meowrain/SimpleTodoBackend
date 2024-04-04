@@ -24,6 +24,7 @@ func main() {
 	// 设置路由
 	routes.SetupUserRoutes(router)
 	routes.SetupTodoRoutes(router)
+	routes.SetupFeedBackRoutes(router)
 
 	router.Run(":" + config.Cfg.Server.AppPort)
 }
