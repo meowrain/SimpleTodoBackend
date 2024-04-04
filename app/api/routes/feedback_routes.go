@@ -8,7 +8,7 @@ import (
 func SetupFeedBackRoutes(router *gin.Engine) {
 	feedBackGroup := router.Group("/feedback")
 	{
-		feedBackGroup.POST("/", feedBackHandler.AddFeedback)
+		feedBackGroup.POST("/add", feedBackHandler.AddFeedback)
 		feedBackGroup.GET("/helpful", feedBackHandler.IncrementHelpful)
 		feedBackGroup.GET("/helpless", feedBackHandler.IncrementHelpless)
 	}

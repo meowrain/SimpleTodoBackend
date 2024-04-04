@@ -15,7 +15,7 @@ func AddFeedback(c *gin.Context) {
 		return
 	}
 	feedBackService.AddComment(comments)
-	c.JSON(http.StatusBadRequest, responses.SuccessResponse(comments, "Feedback and comments added successfully"))
+	c.JSON(http.StatusOK, responses.SuccessResponse(comments, "Feedback and comments added successfully"))
 }
 
 func IncrementHelpful(c *gin.Context) {
