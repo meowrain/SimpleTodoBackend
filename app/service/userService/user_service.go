@@ -50,46 +50,28 @@ func BeforeSave(u *models.User) error {
 	return nil
 }
 func UpdateUser(inputUser, userFromDB *models.User) error {
-	//这个可以直接SaveUser(u) 但是这样的话，会把所有的字段都更新，不太好
-	if inputUser.Username != "" {
-		userFromDB.Username = inputUser.Username
+	updatesMap := map[string]interface{}{
+		"Username":    inputUser.Username,
+		"Avatar":      inputUser.Avatar,
+		"Bio":         inputUser.Bio,
+		"Email":       inputUser.Email,
+		"PhoneNumber": inputUser.PhoneNumber,
+		"Gender":      inputUser.Gender,
+		"Birthday":    inputUser.Birthday,
+		"UpdatedAt":   time.Now(),
 	}
-
-	if inputUser.PasswordHash != "" {
-		// 如果传进来的有值，就进行预处理
-		err := BeforeSave(inputUser)
-		if err != nil {
-			return err
-		}
-		userFromDB.PasswordHash = inputUser.PasswordHash
-	}
-	if inputUser.Bio != "" {
-		userFromDB.Bio = inputUser.Bio
-	}
-
-	if inputUser.Birthday != "" {
-		userFromDB.Birthday = inputUser.Birthday
-	}
-
-	if inputUser.Email != "" {
-		userFromDB.Email = inputUser.Email
-	}
-	if inputUser.Gender != "" {
-		userFromDB.Gender = inputUser.Gender
-	}
-
-	if inputUser.PhoneNumber != "" {
-		userFromDB.PhoneNumber = inputUser.PhoneNumber
-	}
-	// 更新时间戳
-	userFromDB.UpdatedAt = time.Now()
-	err := SaveUser(userFromDB)
+	db := utils.ConnectDB()
+	err := db.Model(&userFromDB).Updates(updatesMap).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 func VerifyPassword(password, hashedPassword string) error {
+	if hashedPassword == "" {
+		// 如果hashedPassword是空的，返回一个错误
+		return errors.New("hashed password is empty, cannot verify password")
+	}
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
@@ -125,32 +107,10 @@ func GetUserByID(id uint) (models.User, error) {
 }
 
 func UpdateAvatar(u *models.User, avatarURL string) error {
-	u.Avatar = avatarURL
 	//更新用户信息
-	err := SaveUser(u)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+	db := utils.ConnectDB()
 
-// 更新bio
-func Updatebio(u *models.User, bio string) error {
-	if len(bio) > 250 {
-		return errors.New("Bio is too long")
-	}
-	u.Bio = bio
-	err := SaveUser(u)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// 删除bio
-func Dlebio(u *models.User) error {
-	u.Bio = ""
-	err := SaveUser(u)
+	err := db.Model(&u).Update("avatar", avatarURL).Error
 	if err != nil {
 		return err
 	}

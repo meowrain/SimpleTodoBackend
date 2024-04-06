@@ -26,8 +26,6 @@ func SetupUserRoutes(router *gin.Engine) {
 		})
 		//上传头像
 		userGroup.POST("/upload_avatar", userHandler.UploadAvatar)
-		userGroup.PUT("/updatebio", userHandler.UpdateBio)
-		userGroup.DELETE("/delete", userHandler.DleBio)
 
 	}
 }
