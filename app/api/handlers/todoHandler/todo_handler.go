@@ -12,6 +12,7 @@ import (
 	"todoBackend/utils/token"
 )
 
+// CreateTodo 创建todo
 func CreateTodo(c *gin.Context) {
 	var todo models.Todo
 	if err := c.ShouldBindJSON(&todo); err != nil {
@@ -24,6 +25,8 @@ func CreateTodo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, SuccessResponse(todo, "Add success!"))
 }
+
+// GetAllTodo 获取所有todo
 func GetAllTodo(c *gin.Context) {
 	userId, err := token.ExtractTokenID(c)
 	todos, err := todoService.GetAllTodo(userId)
@@ -33,6 +36,7 @@ func GetAllTodo(c *gin.Context) {
 	c.JSON(http.StatusOK, SuccessResponse(todos, "get successfully!"))
 }
 
+// DeleteTodo 删除todo
 func DeleteTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	if err := todoService.DeleteTodo(id); err != nil {
@@ -42,6 +46,7 @@ func DeleteTodo(c *gin.Context) {
 	c.JSON(http.StatusOK, SuccessResponse(id, "todo 删除成功"))
 }
 
+// UpdateTodo 更新todo
 func UpdateTodo(c *gin.Context) {
 	var todo models.Todo
 	if err := c.ShouldBindJSON(&todo); err != nil {
@@ -55,6 +60,8 @@ func UpdateTodo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, SuccessResponse(todo, "Update success!"))
 }
+
+// GetTodo 获取单个todo
 func GetTodo(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	todo, err := todoService.GetTodo(id)
@@ -64,6 +71,8 @@ func GetTodo(c *gin.Context) {
 	}
 	c.JSON(200, SuccessResponse(todo, "GET success!"))
 }
+
+// GetNumofTodo 获取todo数量
 func GetNumofTodo(c *gin.Context) {
 	userId, err := token.ExtractTokenID(c)
 	count, err := todoService.GetNumsofTodo(userId)
@@ -72,8 +81,9 @@ func GetNumofTodo(c *gin.Context) {
 		return
 	}
 	c.JSON(200, SuccessResponse(count, "Count obtained successfully "))
-
 }
+
+// UploadTodoPhoto 上传todo照片
 func UploadTodoPhoto(c *gin.Context) {
 	todoid, _ := strconv.Atoi(c.Param("id"))
 	file, err := c.FormFile("photo")

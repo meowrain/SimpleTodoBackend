@@ -5,6 +5,7 @@ import (
 	"todoBackend/app/models"
 )
 
+// CreateTable 用于在数据库中创建表
 func CreateTable() {
 	// 数据库初始化
 	db := ConnectDB()

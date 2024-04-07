@@ -89,37 +89,33 @@ func UploadAvatar(c *gin.Context) {
 	c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 	c.Header("Pragma", "no-cache")
 	c.Header("Expires", "0")
-	// 获取用户id
+
 	userId, err := token.ExtractTokenID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// 获取上传的文件
 	file, err := c.FormFile("avatar")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
 	}
 
-	// 获取文件名
 	fileName := file.Filename
-	// 获取文件后缀
 	extName := filepath.Ext(fileName)
-	// 通过id获取用户信息
 	userFromDB, err := userService.GetUserByID(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
 	}
-	// 将文件保存到指定路径
+
 	err = c.SaveUploadedFile(file, "app/static/avatars/"+strconv.Itoa(int(userId))+extName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.ErrorResponse(err.Error(), "保存文件失败"))
 		return
 	}
-	// 更新用户头像
+
 	server := config.Cfg.Server.URL
 	uploadUrl := fmt.Sprintf("%s/users/avatars/", server) + strconv.Itoa(int(userId)) + extName
 	err = userService.UpdateAvatar(&userFromDB, uploadUrl)
@@ -127,6 +123,6 @@ func UploadAvatar(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, responses.ErrorResponse(err.Error(), "更新用户头像失败"))
 		return
 	}
-	// 返回成功信息
+
 	c.JSON(http.StatusOK, responses.SuccessResponse(userFromDB, "avatar uploaded successfully"))
 }

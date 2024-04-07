@@ -6,14 +6,16 @@ import (
 	"todoBackend/utils"
 )
 
-// 创造todo
+// CreateTodo 创建一个新的todo
 func CreateTodo(todo *models.Todo) error {
 	db := utils.ConnectDB()
 	if err := db.Create(&todo).Error; err != nil {
 		return err
 	}
 	return nil
-} //查看所有的todo
+}
+
+// GetAllTodo 获取所有属于指定用户的todo列表
 func GetAllTodo(userId uint) ([]models.Todo, error) {
 	db := utils.ConnectDB()
 	var todos []models.Todo
@@ -22,7 +24,9 @@ func GetAllTodo(userId uint) ([]models.Todo, error) {
 	} else {
 		return todos, nil
 	}
-} //删除todo根据提供的ID
+}
+
+// DeleteTodo 根据提供的ID删除todo
 func DeleteTodo(id int) error {
 	db := utils.ConnectDB()
 
@@ -51,7 +55,7 @@ func DeleteTodo(id int) error {
 	return nil
 }
 
-// 更新数据//
+// UpdateTodo 根据ID更新todo数据
 func UpdateTodo(id int, updateTodo *models.Todo) error {
 	db := utils.ConnectDB()
 	//查询是否存在这个todo
@@ -66,6 +70,8 @@ func UpdateTodo(id int, updateTodo *models.Todo) error {
 	*updateTodo = todo
 	return nil
 }
+
+// GetTodo 根据ID获取特定的todo
 func GetTodo(id int) (*models.Todo, error) {
 	db := utils.ConnectDB()
 	var todo models.Todo
@@ -74,8 +80,9 @@ func GetTodo(id int) (*models.Todo, error) {
 	}
 	return &todo, nil
 }
-func GetNumsofTodo(userId uint) (int, error) {
 
+// GetNumsofTodo 获取特定用户的todo数量
+func GetNumsofTodo(userId uint) (int, error) {
 	db := utils.ConnectDB()
 	var count int64
 	if err := db.Model(&models.Todo{}).Where("user_id = ?", userId).Count(&count).Error; err != nil {

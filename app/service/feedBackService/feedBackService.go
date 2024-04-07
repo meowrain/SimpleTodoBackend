@@ -5,6 +5,7 @@ import (
 	"todoBackend/utils"
 )
 
+// AddComment 将评论添加到数据库
 func AddComment(comments []models.Comment) {
 	db := utils.ConnectDB()
 	// 创建新的评论记录
@@ -12,6 +13,8 @@ func AddComment(comments []models.Comment) {
 		db.Create(&comment)
 	}
 }
+
+// IncrementHelpful 帮助计数加一
 func IncrementHelpful() error {
 	db := utils.ConnectDB()
 	var feedback models.FeedBack
@@ -22,6 +25,8 @@ func IncrementHelpful() error {
 	db.Save(&feedback)
 	return nil
 }
+
+// IncrementHelpLess 无帮助计数加一
 func IncrementHelpLess() error {
 	db := utils.ConnectDB()
 	var feedback models.FeedBack

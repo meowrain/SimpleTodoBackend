@@ -10,6 +10,7 @@ import (
 	"todoBackend/app/config"
 )
 
+// GenerateToken 生成JWT令牌
 func GenerateToken(user_id uint) (string, error) {
 	// 从配置中获取JWT的有效期（token lifespan）
 	tokenLifespan, err := strconv.Atoi(config.Cfg.Jwt.TokenLifeSpan)
@@ -31,6 +32,7 @@ func GenerateToken(user_id uint) (string, error) {
 	return token.SignedString([]byte(config.Cfg.Jwt.ApiSecret))
 }
 
+// ExtractToken 从请求中提取令牌
 func ExtractToken(c *gin.Context) string {
 	token := c.Query("token")
 	if token != "" {
@@ -41,6 +43,8 @@ func ExtractToken(c *gin.Context) string {
 	//fmt.Println(bearerToken)
 	return strings.Split(bearerToken, " ")[0]
 }
+
+// ExtractTokenID 从请求中提取用户ID
 func ExtractTokenID(c *gin.Context) (uint, error) {
 	tokenString := ExtractToken(c)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -65,6 +69,8 @@ func ExtractTokenID(c *gin.Context) (uint, error) {
 
 	return 0, nil
 }
+
+// Valid 验证令牌有效性
 func Valid(c *gin.Context) error {
 	tokenString := ExtractToken(c)
 	fmt.Println(tokenString)

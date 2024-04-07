@@ -12,12 +12,12 @@ func SetupUserRoutes(router *gin.Engine) {
 	userGroup := router.Group("/users")
 	{
 		//为user设置静态目录，存放用户头像信息
-		userGroup.Static("/avatars", "./app/static/avatars")
-		userGroup.POST("/register", userHandler.Register)
-		userGroup.POST("/login", userHandler.Login)
-		userGroup.Use(middleware.JwtAuthMiddleware())
-		userGroup.GET("/info", userHandler.CurrentUser)
-		userGroup.PUT("/update", userHandler.UpdateUser)
+		userGroup.Static("/avatars", "./app/static/avatars") // 设置静态目录用于存放用户头像信息
+		userGroup.POST("/register", userHandler.Register)    // 处理用户注册请求
+		userGroup.POST("/login", userHandler.Login)          // 处理用户登录请求
+		userGroup.Use(middleware.JwtAuthMiddleware())        // 使用JWT认证中间件
+		userGroup.GET("/info", userHandler.CurrentUser)      // 获取当前用户信息
+		userGroup.PUT("/update", userHandler.UpdateUser)     // 更新用户信息
 		//临时测试
 		userGroup.GET("/default_avatar", func(c *gin.Context) {
 			c.JSON(200, gin.H{
@@ -25,7 +25,7 @@ func SetupUserRoutes(router *gin.Engine) {
 			})
 		})
 		//上传头像
-		userGroup.POST("/upload_avatar", userHandler.UploadAvatar)
+		userGroup.POST("/upload_avatar", userHandler.UploadAvatar) // 处理上传用户头像请求
 
 	}
 }

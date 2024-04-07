@@ -12,15 +12,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// CreateUser 创建新用户
 func CreateUser(u *models.User) error {
 	var err error
 	err = BeforeSave(u)
-	//限制bio长度
+	// 限制bio长度
 	if err != nil {
 		return err
 	}
 	if len(u.Bio) > 250 {
-		return errors.New("Bio is too long, maximum is 240 characters")
+		return errors.New("bio is too long, maximum is 240 characters")
 	}
 	db := utils.ConnectDB()
 	err = db.Create(&u).Error
@@ -30,7 +31,7 @@ func CreateUser(u *models.User) error {
 	return nil
 }
 
-// SaveUser
+// SaveUser 保存用户信息
 func SaveUser(u *models.User) error {
 	var err error
 	db := utils.ConnectDB()
@@ -40,6 +41,8 @@ func SaveUser(u *models.User) error {
 	}
 	return nil
 }
+
+// BeforeSave 在保存用户前进行处理，如密码哈希化和去除用户名中的特殊字符
 func BeforeSave(u *models.User) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.PasswordHash), bcrypt.DefaultCost)
 	if err != nil {
@@ -49,10 +52,11 @@ func BeforeSave(u *models.User) error {
 	u.Username = html.EscapeString(strings.TrimSpace(u.Username))
 	return nil
 }
+
+// UpdateUser 更新用户信息
 func UpdateUser(inputUser, userFromDB *models.User) error {
 	updatesMap := map[string]interface{}{
 		"Username":    inputUser.Username,
-		"Avatar":      inputUser.Avatar,
 		"Bio":         inputUser.Bio,
 		"Email":       inputUser.Email,
 		"PhoneNumber": inputUser.PhoneNumber,
@@ -67,6 +71,8 @@ func UpdateUser(inputUser, userFromDB *models.User) error {
 	}
 	return nil
 }
+
+// VerifyPassword 验证密码是否匹配
 func VerifyPassword(password, hashedPassword string) error {
 	if hashedPassword == "" {
 		// 如果hashedPassword是空的，返回一个错误
@@ -75,9 +81,10 @@ func VerifyPassword(password, hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
+// LoginCheck 登录验证
 func LoginCheck(u *models.User) (string, error) {
 	var err error
-	userInDB := models.User{} //加密过得
+	userInDB := models.User{} // 加密过得
 	db := utils.ConnectDB()
 	err = db.Model(models.User{}).Where("username = ?", u.Username).Take(&userInDB).Error
 	if err != nil {
@@ -92,10 +99,9 @@ func LoginCheck(u *models.User) (string, error) {
 		return "", err
 	}
 	return generateToken, nil
-
 }
 
-// GetUserByID
+// GetUserByID 通过ID获取用户信息
 func GetUserByID(id uint) (models.User, error) {
 	var u models.User
 	db := utils.ConnectDB()
@@ -106,10 +112,10 @@ func GetUserByID(id uint) (models.User, error) {
 	return u, nil
 }
 
+// UpdateAvatar 更新用户头像
 func UpdateAvatar(u *models.User, avatarURL string) error {
-	//更新用户信息
+	// 更新用户信息
 	db := utils.ConnectDB()
-
 	err := db.Model(&u).Update("avatar", avatarURL).Error
 	if err != nil {
 		return err
