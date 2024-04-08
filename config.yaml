@@ -9,4 +9,4 @@ db:
   port: "3306"
 jwt:
   api_secret: "meowrain"
-  token_hour_span: 1
+  token_hour_span: 720
