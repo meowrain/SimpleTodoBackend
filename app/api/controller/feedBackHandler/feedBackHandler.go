@@ -3,8 +3,8 @@ package feedBackHandler
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"todoBackend/app/api/service/feedBackService"
 	"todoBackend/app/models"
-	"todoBackend/app/service/feedBackService"
 	"todoBackend/utils/responses"
 )
 

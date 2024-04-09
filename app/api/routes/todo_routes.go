@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"todoBackend/app/api/handlers/todoHandler"
+	"todoBackend/app/api/controller/todoHandler"
 	"todoBackend/app/middleware"
 )
 

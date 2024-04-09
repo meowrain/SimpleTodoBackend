@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"todoBackend/app/api/handlers/userHandler"
+	"todoBackend/app/api/controller/userHandler"
 	"todoBackend/app/middleware"
 
 	"github.com/gin-gonic/gin"

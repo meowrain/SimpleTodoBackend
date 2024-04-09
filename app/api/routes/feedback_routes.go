@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"todoBackend/app/api/handlers/feedBackHandler"
+	"todoBackend/app/api/controller/feedBackHandler"
 )
 
 // SetupFeedBackRoutes 设置反馈路由
