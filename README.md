@@ -28,15 +28,70 @@
 - [x] 项目模型
 - [x] 项目控制器
 - [x] 项目服务
-- [ ] 项目文档
-- [ ] 项目测试
-
-### 待开发功能
-- [ ] Todo 图片重点信息提取
-- [ ] Todo 语音识别(时间充足会做)
-- [ ] Todo分类
-- [ ] Todo标签
-- [ ] Todo搜索
+- [x] 项目文档
+- [x] 项目测试
+- [x] 项目部署
 
 
-### 构建程序
+# 直接使用源代码启动项目
+
+## 克隆项目
+
+```shell
+git clone https://github.com/meowrain/TodoBackend.git
+```
+
+## 进入项目目录
+
+```shell
+cd TodoBackend
+```
+
+## 安装依赖
+
+```shell
+go get
+```
+## 启动项目
+
+```shell
+go run main.go
+```
+
+
+# 从源代码构建程序
+
+首先请确保你的电脑安装了go语言环境还有GNU Make
+
+## 为所有平台进行构建
+
+```shell
+make build-all
+```
+
+## 仅为windows平台构建
+
+```shell
+make build-windows
+```
+
+## 仅为macOS平台构建
+
+```shell
+make build-macos
+```
+
+## 仅为linux平台构建
+
+```shell
+make build-linux
+```
+
+### 运行程序
+
+> 复制config.yaml到可执行文件目录下
+
+运行
+```shell
+./SimpleTodoBackend-${platform}-${arch}
+```
