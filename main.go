@@ -4,7 +4,7 @@ import (
 	"time"
 	"todoBackend/app/api/routes" // 导入自定义API路由
 	"todoBackend/app/config"     // 导入应用配置
-	"todoBackend/utils"          // 导入自定义工具函数
+	"todoBackend/utils/db"
 
 	_ "todoBackend/docs" // 导入Swagger文档
 
@@ -34,8 +34,7 @@ import (
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
-	utils.ConnectDB()   // 连接数据库
-	utils.CreateTable() // 创建数据库表
+	db.CreateTable() // 创建数据库表
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default() // 创建Gin框架实例
 
