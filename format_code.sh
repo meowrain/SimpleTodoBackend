@@ -1,0 +1,3 @@
+# !/user/bin/bash
+echo "格式化当前项目代码。。。"
+go fmt ./...
