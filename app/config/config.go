@@ -20,7 +20,7 @@ type Config struct {
 	} `yaml:"server"`
 	Jwt struct {
 		ApiSecret     string `yaml:"api_secret"`
-		TokenLifeSpan string `yaml:"token_hour_span"`
+		TokenLifeSpan int64  `yaml:"token_hour_span"`
 	}
 }
 
