@@ -1,4 +1,4 @@
-package models
+package todo_model
 
 import "gorm.io/gorm"
 

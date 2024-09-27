@@ -1,4 +1,4 @@
-package models
+package feedback_model
 
 import "gorm.io/gorm"
 
