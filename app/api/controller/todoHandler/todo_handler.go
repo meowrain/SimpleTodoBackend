@@ -7,14 +7,14 @@ import (
 	"path/filepath"
 	"strconv"
 	"todoBackend/app/api/service/todoService"
-	"todoBackend/app/models"
+	"todoBackend/app/models/todo_model"
+	"todoBackend/utils/jwts"
 	. "todoBackend/utils/responses"
-	"todoBackend/utils/token"
 )
 
 // CreateTodo 创建todo
 func CreateTodo(c *gin.Context) {
-	var todo models.Todo
+	var todo todo_model.Todo
 	if err := c.ShouldBindJSON(&todo); err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse(err, "error"))
 		return
@@ -28,7 +28,7 @@ func CreateTodo(c *gin.Context) {
 
 // GetAllTodo 获取所有todo
 func GetAllTodo(c *gin.Context) {
-	userId, err := token.ExtractTokenID(c)
+	userId, err := jwts.ExtractTokenID(c)
 	todos, err := todoService.GetAllTodo(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse(err, "获取全部todo失败"))
@@ -48,7 +48,7 @@ func DeleteTodo(c *gin.Context) {
 
 // UpdateTodo 更新todo
 func UpdateTodo(c *gin.Context) {
-	var todo models.Todo
+	var todo todo_model.Todo
 	if err := c.ShouldBindJSON(&todo); err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse(err, "error"))
 		return
@@ -74,7 +74,7 @@ func GetTodo(c *gin.Context) {
 
 // GetNumofTodo 获取todo数量
 func GetNumofTodo(c *gin.Context) {
-	userId, err := token.ExtractTokenID(c)
+	userId, err := jwts.ExtractTokenID(c)
 	count, err := todoService.GetNumsofTodo(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse(0, "error"))

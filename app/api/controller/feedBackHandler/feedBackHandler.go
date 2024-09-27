@@ -4,14 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"todoBackend/app/api/service/feedBackService"
-	"todoBackend/app/models"
+	"todoBackend/app/models/feedback_model"
 	"todoBackend/utils/responses"
 )
 
 // AddFeedback 处理添加反馈的请求
 func AddFeedback(c *gin.Context) {
 	// 绑定 JSON 请求至 comments 变量
-	var comments []models.Comment
+	var comments []feedback_model.Comment
 	if err := c.ShouldBindJSON(&comments); err != nil {
 		c.JSON(http.StatusBadRequest, responses.SuccessResponse(comments, "error"))
 		return

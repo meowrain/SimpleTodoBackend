@@ -7,46 +7,55 @@ import (
 	"strconv"
 	"todoBackend/app/api/service/userService"
 	"todoBackend/app/config"
-	"todoBackend/app/models"
+	"todoBackend/app/models/auth_model"
+	"todoBackend/app/models/user_model"
+	"todoBackend/utils/jwts"
 	"todoBackend/utils/responses"
-	"todoBackend/utils/token"
 
 	"github.com/gin-gonic/gin"
 )
 
 // Register 用于处理用户注册请求。
 func Register(c *gin.Context) {
-	var inputUser models.User
-	if err := c.ShouldBindJSON(&inputUser); err != nil {
+	var registerRequest auth_model.RegisterRequest
+	if err := c.ShouldBindJSON(&registerRequest); err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
-		return
 	}
-	err := userService.CreateUser(&inputUser)
+	var userToSave user_model.User = user_model.User{
+		Username: registerRequest.Username,
+		Password: registerRequest.PasswordHash,
+	}
+	err := userService.CreateUser(&userToSave)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
 	}
-	c.JSON(http.StatusOK, responses.SuccessResponse(inputUser, "success"))
+	c.JSON(http.StatusOK, responses.SuccessResponse(userToSave, "success"))
 }
 
 // Login 用于处理用户登录的请求
 func Login(c *gin.Context) {
-	var inputUser models.User
-	if err := c.ShouldBindJSON(&inputUser); err != nil {
+	var loginRequest auth_model.LoginRequest
+	if err := c.ShouldBindJSON(&loginRequest); err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
-		return
 	}
-	loginCheck, err := userService.LoginCheck(&inputUser)
+	var inputUser user_model.User = user_model.User{
+		Username: loginRequest.Username,
+		Password: loginRequest.PasswordHash,
+	}
+
+	jwtToken, err := userService.LoginCheck(&inputUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "登录失败"))
 		return
 	}
-	c.JSON(http.StatusOK, responses.SuccessResponse(loginCheck, "get loginCheck success!"))
+	c.Header("Authorization", "Bearer "+jwtToken)
+	c.JSON(http.StatusOK, responses.SuccessResponse(jwtToken, "登录成功！"))
 }
 
 // CurrentUser 用来获取当前用户的信息并返回给前端
 func CurrentUser(c *gin.Context) {
-	userId, err := token.ExtractTokenID(c)
+	userId, err := jwts.ExtractTokenID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -61,12 +70,12 @@ func CurrentUser(c *gin.Context) {
 
 // UpdateUser 用来更新用户信息
 func UpdateUser(c *gin.Context) {
-	var inputUser models.User
+	var inputUser user_model.User
 	if err := c.ShouldBindJSON(&inputUser); err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
 	}
-	userId, err := token.ExtractTokenID(c)
+	userId, err := jwts.ExtractTokenID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -90,7 +99,7 @@ func UploadAvatar(c *gin.Context) {
 	c.Header("Pragma", "no-cache")
 	c.Header("Expires", "0")
 
-	userId, err := token.ExtractTokenID(c)
+	userId, err := jwts.ExtractTokenID(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
