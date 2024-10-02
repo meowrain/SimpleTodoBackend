@@ -1,14 +1,14 @@
-package userHandler
+package controller
 
 import (
 	"fmt"
 	"net/http"
 	"path/filepath"
 	"strconv"
-	"todoBackend/app/api/service/userService"
+	"todoBackend/app/api/auth/auth_model"
+	"todoBackend/app/api/user/models"
+	"todoBackend/app/api/user/service"
 	"todoBackend/app/config"
-	"todoBackend/app/models/auth_model"
-	"todoBackend/app/models/user_model"
 	"todoBackend/utils/jwts"
 	"todoBackend/utils/responses"
 
@@ -21,11 +21,11 @@ func Register(c *gin.Context) {
 	if err := c.ShouldBindJSON(&registerRequest); err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 	}
-	var userToSave user_model.User = user_model.User{
+	var userToSave models.User = models.User{
 		Username: registerRequest.Username,
 		Password: registerRequest.PasswordHash,
 	}
-	err := userService.CreateUser(&userToSave)
+	err := service.CreateUser(&userToSave)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
@@ -39,12 +39,12 @@ func Login(c *gin.Context) {
 	if err := c.ShouldBindJSON(&loginRequest); err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 	}
-	var inputUser user_model.User = user_model.User{
+	var inputUser models.User = models.User{
 		Username: loginRequest.Username,
 		Password: loginRequest.PasswordHash,
 	}
 
-	jwtToken, err := userService.LoginCheck(&inputUser)
+	jwtToken, err := service.LoginCheck(&inputUser)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "登录失败"))
 		return
@@ -60,7 +60,7 @@ func CurrentUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	u, err := userService.GetUserByID(userId)
+	u, err := service.GetUserByID(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -70,7 +70,7 @@ func CurrentUser(c *gin.Context) {
 
 // UpdateUser 用来更新用户信息
 func UpdateUser(c *gin.Context) {
-	var inputUser user_model.User
+	var inputUser models.User
 	if err := c.ShouldBindJSON(&inputUser); err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
@@ -80,12 +80,12 @@ func UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	userFromDB, err := userService.GetUserByID(userId)
+	userFromDB, err := service.GetUserByID(userId)
 	if err != nil {
 		c.JSON(http.StatusNotFound, responses.NotFoundResponse(err.Error()))
 		return
 	}
-	if err := userService.UpdateUser(&inputUser, &userFromDB); err != nil {
+	if err := service.UpdateUser(&inputUser, &userFromDB); err != nil {
 		c.JSON(http.StatusNotFound, responses.ErrorResponse(err.Error(), "update failed"))
 		return
 	}
@@ -113,7 +113,7 @@ func UploadAvatar(c *gin.Context) {
 
 	fileName := file.Filename
 	extName := filepath.Ext(fileName)
-	userFromDB, err := userService.GetUserByID(userId)
+	userFromDB, err := service.GetUserByID(userId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.ErrorResponse(err.Error(), "error"))
 		return
@@ -127,7 +127,7 @@ func UploadAvatar(c *gin.Context) {
 
 	server := config.Cfg.Server.URL
 	uploadUrl := fmt.Sprintf("%s/users/avatars/", server) + strconv.Itoa(int(userId)) + extName
-	err = userService.UpdateAvatar(&userFromDB, uploadUrl)
+	err = service.UpdateAvatar(&userFromDB, uploadUrl)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.ErrorResponse(err.Error(), "更新用户头像失败"))
 		return

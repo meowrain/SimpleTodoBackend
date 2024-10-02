@@ -5,7 +5,7 @@ db:
   user: "root"
   password: "123456"
   name: "simpletodo"
-  host: "127.0.0.1"
+  host: "172.30.235.228"
   port: "3306"
 jwt:
   api_secret: "meowrain"

@@ -1,18 +1,18 @@
-package userService
+package service
 
 import (
 	"errors"
 	"html"
 	"strings"
 	"time"
-	"todoBackend/app/models/user_model"
+	"todoBackend/app/api/user/models"
 	"todoBackend/utils/db"
 	"todoBackend/utils/jwts"
 	"todoBackend/utils/pwd"
 )
 
 // CreateUser 创建新用户
-func CreateUser(u *user_model.User) error {
+func CreateUser(u *models.User) error {
 	var err error
 	hashPassword := pwd.HashPassword(u.Password)
 	u.Password = hashPassword
@@ -29,7 +29,7 @@ func CreateUser(u *user_model.User) error {
 }
 
 // UpdateUser 更新用户信息
-func UpdateUser(inputUser, userFromDB *user_model.User) error {
+func UpdateUser(inputUser, userFromDB *models.User) error {
 	updatesMap := map[string]interface{}{
 		"Username":    inputUser.Username,
 		"Bio":         inputUser.Bio,
@@ -47,10 +47,10 @@ func UpdateUser(inputUser, userFromDB *user_model.User) error {
 }
 
 // LoginCheck 登录验证
-func LoginCheck(u *user_model.User) (string, error) {
+func LoginCheck(u *models.User) (string, error) {
 	var err error
-	userInDB := user_model.User{} // 数据库中存储的user
-	err = db.DB.Model(user_model.User{}).Where("username = ?", u.Username).Take(&userInDB).Error
+	userInDB := models.User{} // 数据库中存储的user
+	err = db.DB.Model(models.User{}).Where("username = ?", u.Username).Take(&userInDB).Error
 	if err != nil {
 		return "", errors.New("此用户不存在，请先注册！")
 	}
@@ -71,8 +71,8 @@ func LoginCheck(u *user_model.User) (string, error) {
 }
 
 // GetUserByID 通过ID获取用户信息
-func GetUserByID(id uint) (user_model.User, error) {
-	var u user_model.User
+func GetUserByID(id uint) (models.User, error) {
+	var u models.User
 	if err := db.DB.First(&u, id).Error; err != nil {
 		return u, errors.New("user_model not found")
 	}
@@ -81,7 +81,7 @@ func GetUserByID(id uint) (user_model.User, error) {
 }
 
 // UpdateAvatar 更新用户头像
-func UpdateAvatar(u *user_model.User, avatarURL string) error {
+func UpdateAvatar(u *models.User, avatarURL string) error {
 	// 更新用户信息
 	err := db.DB.Model(&u).Update("avatar", avatarURL).Error
 	if err != nil {

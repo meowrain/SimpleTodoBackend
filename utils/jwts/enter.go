@@ -55,7 +55,7 @@ func GetTokenFromHttpHeader(c *gin.Context) string {
 	if len(parts) == 2 && parts[0] == "Bearer" {
 		return parts[1] // 返回实际的JWT
 	}
-	return ""
+	return bearerToken
 }
 
 // ExtractTokenID 从请求中提取用户ID

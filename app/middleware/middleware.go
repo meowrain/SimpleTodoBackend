@@ -14,8 +14,8 @@ func JwtAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		err := jwts.Valid(c)
 		if err != nil {
-			c.String(http.StatusUnauthorized, "Unauthorized") //如果校验失败，则返回401状态码
-			c.Abort()                                         //中断后续的函数
+			c.String(http.StatusUnauthorized, err.Error()) //如果校验失败，则返回401状态码
+			c.Abort()                                      //中断后续的函数
 			return
 		}
 		c.Next() //如果校验通过，调用c.Next()函数

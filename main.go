@@ -2,8 +2,9 @@ package main
 
 import (
 	"time"
-	"todoBackend/app/api/routes" // 导入自定义API路由
-	"todoBackend/app/config"     // 导入应用配置
+	routes2 "todoBackend/app/api/todo/routes"
+	"todoBackend/app/api/user/routes"
+	"todoBackend/app/config" // 导入应用配置
 	"todoBackend/utils/db"
 
 	_ "todoBackend/docs" // 导入Swagger文档
@@ -48,9 +49,8 @@ func main() {
 	}))
 
 	// 设置路由
-	routes.SetupUserRoutes(router)     // 设置用户相关路由
-	routes.SetupTodoRoutes(router)     // 设置待办事项相关路由
-	routes.SetupFeedBackRoutes(router) // 设置反馈相关路由
+	routes.SetupUserRoutes(router)  // 设置用户相关路由
+	routes2.SetupTodoRoutes(router) // 设置待办事项相关路由
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":" + config.Cfg.Server.AppPort) // 运行服务并指定端口
 }
