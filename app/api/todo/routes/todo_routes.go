@@ -12,11 +12,13 @@ func SetupTodoRoutes(router *gin.Engine) {
 	todoGroup := router.Group("/todos")
 	{
 		todoGroup.Use(middleware.JwtAuthMiddleware())
-
+		// 添加todo
 		todoGroup.POST("/all", controller.AddAllTodo)
 
 		// 获取所有todo
 		todoGroup.GET("/all", controller.GetAllTodo)
+		//更新Todo
+		todoGroup.PUT("/all", controller.UpdateTodoList)
 
 	}
 }
