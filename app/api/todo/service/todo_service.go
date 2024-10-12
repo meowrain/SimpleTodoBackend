@@ -109,3 +109,6 @@ func UpdateTodoList(todoList []models.TodoRequest, userId uint) error {
 
 	return nil
 }
+func Num_TodoList(todoList []models.Todo) int {
+	return len(todoList)
+}
