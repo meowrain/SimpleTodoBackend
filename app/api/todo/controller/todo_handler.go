@@ -31,11 +31,22 @@ func AddAllTodo(c *gin.Context) {
 // GetAllTodo 获取所有todo
 func GetAllTodo(c *gin.Context) {
 	userId, err := jwts.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ErrorResponse(err, "提取用户ID失败"))
+		return
+	}
 	todos, err := service.GetAllTodo(userId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse(err, "获取全部todo失败"))
+		c.JSON(http.StatusInternalServerError, ErrorResponse(err, "获取todo列表失败"))
+		return
 	}
-	c.JSON(http.StatusOK, SuccessResponse(todos, "get successfully!"))
+	count := service.Num_TodoList(todos)
+	responseData := map[string]interface{}{
+		"todos":   todos,
+		"count":   count,
+		"message": "获取成功",
+	}
+	c.JSON(http.StatusOK, SuccessResponse(responseData, "获取成功"))
 }
 
 // 更新现有todo
