@@ -16,3 +16,7 @@ type RegisterRequest struct {
 type RegisterResponse struct {
 	responses.Response
 }
+
+type PasswordRequest struct {
+	PasswordHash string `json:"password"`
+}

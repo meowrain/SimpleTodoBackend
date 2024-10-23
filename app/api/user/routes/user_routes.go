@@ -24,6 +24,7 @@ func SetupUserRoutes(router *gin.Engine) {
 				"url": "http://127.0.0.1:8090/users/static/user.svg",
 			})
 		})
+		userGroup.POST("/password", controller.ChanagePassword)
 		//上传头像
 		userGroup.POST("/upload_avatar", controller.UploadAvatar) // 处理上传用户头像请求
 

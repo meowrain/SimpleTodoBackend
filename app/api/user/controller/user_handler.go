@@ -135,3 +135,30 @@ func UploadAvatar(c *gin.Context) {
 
 	c.JSON(http.StatusOK, responses.SuccessResponse(userFromDB, "avatar uploaded successfully"))
 }
+
+func ChanagePassword(c *gin.Context) {
+	passwordRequest := auth_model.PasswordRequest{}
+	// 从请求中解析JSON数据到passwordRequest结构体
+	if err := c.ShouldBindJSON(&passwordRequest); err != nil {
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse("", "Bad Request"))
+		return
+	}
+	userId, err := jwts.ExtractTokenID(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse("", "extract token from jwt failed"))
+		return
+	}
+	userFromDB, err := service.GetUserByID(userId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, responses.ErrorResponse("", "Can't get user info from database"))
+		return
+	}
+
+	err = service.UpdateUserPassword(&userFromDB, passwordRequest.PasswordHash)
+	if err != nil {
+		c.JSON(http.StatusBadGateway, responses.ErrorResponse("", "update user password failed"))
+		return
+	}
+	c.JSON(http.StatusOK, responses.SuccessResponse("", "Update User Password Successfully!"))
+
+}

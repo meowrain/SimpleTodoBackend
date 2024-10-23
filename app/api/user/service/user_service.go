@@ -89,3 +89,13 @@ func UpdateAvatar(u *models.User, avatarURL string) error {
 	}
 	return nil
 }
+
+// UpdateUserPassword
+func UpdateUserPassword(u *models.User, password string) error {
+	hashedPassword := pwd.HashPassword(password)
+	err := db.DB.Model(&u).Update("password", hashedPassword).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
